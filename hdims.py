@@ -4,6 +4,8 @@ from pathlib import Path
 import tempfile
 from typing import Dict
 
+import os
+
 import matplotlib.pyplot as plt
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
@@ -94,7 +96,7 @@ ScreenManager:
 
         MDTopAppBar:
             title: "Patient Data Management"
-            left_action_items: [["arrow-left", lambda x: app.root.get_screen("dashboard").refresh_metrics() or setattr(app.root, "current", "dashboard")]]
+            left_action_items: [["arrow-left", lambda x: root.go_back()]]
 
         MDTextField:
             id: hospital_input
@@ -144,6 +146,14 @@ class DashboardScreen(Screen):
 
 
 class RecordScreen(Screen):
+    def go_back(self) -> None:
+        app = MDApp.get_running_app()
+        if app is None:
+            return
+
+        app.root.get_screen("dashboard").refresh_metrics()
+        app.root.current = "dashboard"
+
     def add_record(self) -> None:
         app = MDApp.get_running_app()
         if app is None:
@@ -175,7 +185,7 @@ class HDIMSApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data_manager = HDIMSDataManager()
-        self.chart_path = Path(tempfile.gettempdir()) / "hdims_hospital_chart.png"
+        self.chart_path = Path(tempfile.gettempdir()) / f"hdims_hospital_chart_{os.getpid()}.png"
 
     def build(self):
         self.theme_cls.theme_style = "Light"
