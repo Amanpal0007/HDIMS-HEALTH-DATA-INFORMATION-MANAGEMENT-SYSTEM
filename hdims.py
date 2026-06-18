@@ -1,10 +1,9 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import tempfile
 from typing import Dict
-
-import os
 
 import matplotlib.pyplot as plt
 from kivy.lang import Builder

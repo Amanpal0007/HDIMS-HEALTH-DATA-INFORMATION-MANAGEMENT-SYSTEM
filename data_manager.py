@@ -34,6 +34,15 @@ class HDIMSDataManager:
     def _save_dataframe(self, dataframe: pd.DataFrame) -> None:
         dataframe.to_excel(self.file_path, index=False)
 
+    @staticmethod
+    def _clean_group_counts(raw_counts: Dict[str, int]) -> Dict[str, int]:
+        cleaned_counts: Dict[str, int] = {}
+        for name, count in raw_counts.items():
+            key = str(name).strip()
+            if key != "":
+                cleaned_counts[key] = int(count)
+        return cleaned_counts
+
     def add_record(
         self,
         hospital_name: str,
@@ -97,11 +106,11 @@ class HDIMSDataManager:
         if dataframe.empty:
             return {}
         counts = dataframe.groupby("Hospital Name").size().to_dict()
-        return {str(name): int(count) for name, count in counts.items() if str(name).strip() != ""}
+        return self._clean_group_counts(counts)
 
     def get_disease_counts(self) -> Dict[str, int]:
         dataframe = self._load_dataframe()
         if dataframe.empty:
             return {}
         counts = dataframe.groupby("Disease Name").size().to_dict()
-        return {str(name): int(count) for name, count in counts.items() if str(name).strip() != ""}
+        return self._clean_group_counts(counts)
