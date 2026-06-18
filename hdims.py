@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import tempfile
 from typing import Dict
 
 import matplotlib.pyplot as plt
@@ -174,7 +175,7 @@ class HDIMSApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data_manager = HDIMSDataManager()
-        self.chart_path = Path("/tmp/hdims_hospital_chart.png")
+        self.chart_path = Path(tempfile.gettempdir()) / "hdims_hospital_chart.png"
 
     def build(self):
         self.theme_cls.theme_style = "Light"

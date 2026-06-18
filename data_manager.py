@@ -97,11 +97,11 @@ class HDIMSDataManager:
         if dataframe.empty:
             return {}
         counts = dataframe.groupby("Hospital Name").size().to_dict()
-        return {str(name): int(count) for name, count in counts.items() if str(name).strip() != ''}
+        return {str(name): int(count) for name, count in counts.items() if str(name).strip() != ""}
 
     def get_disease_counts(self) -> Dict[str, int]:
         dataframe = self._load_dataframe()
         if dataframe.empty:
             return {}
         counts = dataframe.groupby("Disease Name").size().to_dict()
-        return {str(name): int(count) for name, count in counts.items() if str(name).strip() != ''}
+        return {str(name): int(count) for name, count in counts.items() if str(name).strip() != ""}
