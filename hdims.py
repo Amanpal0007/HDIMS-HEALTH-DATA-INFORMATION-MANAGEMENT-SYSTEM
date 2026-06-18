@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Dict
 
 import matplotlib.pyplot as plt
@@ -64,10 +65,14 @@ ScreenManager:
             padding: "10dp"
             radius: [12, 12, 12, 12]
             size_hint_y: None
-            height: "180dp"
+            height: "260dp"
             MDLabel:
                 text: "Hospital Distribution (Chart Card)"
                 halign: "center"
+            Image:
+                id: chart_image
+                allow_stretch: True
+                keep_ratio: True
             MDLabel:
                 id: chart_summary_label
                 text: "No data available"
@@ -134,7 +139,7 @@ class DashboardScreen(Screen):
             if hospital_counts
             else "No data available"
         )
-        app.build_hospital_chart(hospital_counts)
+        app.build_hospital_chart(hospital_counts, self.ids.chart_image)
 
 
 class RecordScreen(Screen):
@@ -169,6 +174,7 @@ class HDIMSApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data_manager = HDIMSDataManager()
+        self.chart_path = Path("/tmp/hdims_hospital_chart.png")
 
     def build(self):
         self.theme_cls.theme_style = "Light"
@@ -178,8 +184,10 @@ class HDIMSApp(MDApp):
     def on_start(self) -> None:
         self.root.get_screen("dashboard").refresh_metrics()
 
-    def build_hospital_chart(self, hospital_counts: Dict[str, int]) -> None:
+    def build_hospital_chart(self, hospital_counts: Dict[str, int], image_widget=None) -> None:
         if not hospital_counts:
+            if image_widget is not None:
+                image_widget.source = ""
             return
 
         figure, axis = plt.subplots(figsize=(4, 2.5))
@@ -188,7 +196,12 @@ class HDIMSApp(MDApp):
         axis.set_ylabel("Patients")
         axis.tick_params(axis="x", rotation=20)
         figure.tight_layout()
+        figure.savefig(self.chart_path)
         plt.close(figure)
+
+        if image_widget is not None:
+            image_widget.source = str(self.chart_path)
+            image_widget.reload()
 
 
 if __name__ == "__main__":
