@@ -195,6 +195,9 @@ class HDIMSApp(MDApp):
     def on_start(self) -> None:
         self.root.get_screen("dashboard").refresh_metrics()
 
+    def on_stop(self) -> None:
+        self.chart_path.unlink(missing_ok=True)
+
     def build_hospital_chart(self, hospital_counts: Dict[str, int], image_widget=None) -> None:
         if not hospital_counts:
             if image_widget is not None:
