@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 import tempfile
 from typing import Dict
+import uuid
 
 import matplotlib.pyplot as plt
 from kivy.lang import Builder
@@ -163,7 +163,7 @@ class RecordScreen(Screen):
         disease_name = self.ids.disease_input.text.strip()
         doctor_name = self.ids.doctor_input.text.strip()
 
-        if not all([hospital_name, patient_name, disease_name, doctor_name]):
+        if not (hospital_name and patient_name and disease_name and doctor_name):
             self.ids.status_label.text = "Please fill all fields."
             return
 
@@ -184,7 +184,7 @@ class HDIMSApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data_manager = HDIMSDataManager()
-        self.chart_path = Path(tempfile.gettempdir()) / f"hdims_hospital_chart_{os.getpid()}.png"
+        self.chart_path = Path(tempfile.gettempdir()) / f"hdims_hospital_chart_{uuid.uuid4().hex}.png"
 
     def build(self):
         self.theme_cls.theme_style = "Light"
